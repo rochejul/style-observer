@@ -26,3 +26,47 @@ We could find:
  - [animationiteration](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationiteration_event)
  - [animationend](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationend_event)
  - [animationcancel](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationcancel_event)
+
+## StyleObserver docs
+
+### Usage
+
+```js
+// 1. Initialize the observer with a callback
+const observer = new StyleObserver((records) => {
+  records.forEach(record => {
+    console.log(`Property "${record.propertyName}" changed to: ${record.newValue}`);
+    
+    if (record.propertyName === 'transform') {
+      // Perhaps sync a secondary element or a Canvas draw call
+      updateCanvas(record.newValue);
+    }
+  });
+});
+
+// 2. Start observing a specific element
+const myButton = document.querySelector('.btn-magic');
+
+observer.observe(myButton, {
+  properties: ['background-color', 'transform', 'opacity', 'width']
+});
+
+// --- Test Scenarios ---
+
+// Scenario A: Local attribute change
+// Result: Callback fires immediately.
+myButton.classList.add('active'); 
+
+// Scenario B: Global theme change on <html>
+// Result: Callback fires because of document.documentElement observation.
+document.documentElement.setAttribute('data-theme', 'dark');
+
+// Scenario C: CSS Transition
+// Result: Because of the requestAnimationFrame "pulse", the callback 
+// will fire multiple times per second until the transition finishes.
+myButton.style.transition = "opacity 2s";
+myButton.style.opacity = "0";
+
+// 3. Stop observing when done
+// observer.disconnect();
+```
