@@ -6,7 +6,12 @@
   "description": "Observer any changes of your styling applied on the elements of the page",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:format": "prettier --check \"./**/*.{ts,tsx,js,mjs,cjs,md}\"",
+    "dev:format:check": "prettier --write \"./**/*.{ts,tsx,js,mjs,cjs,md}\""
+  },
+  "//": {
+    "dev:format": "Format files over packages",
+    "dev:format:check": "Check files format over packages"
   },
   "repository": {
     "type": "git",

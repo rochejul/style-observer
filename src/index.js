@@ -15,7 +15,7 @@ export class StyleObserver {
   }
 
   /**
-   * @param {HTMLElement} target 
+   * @param {HTMLElement} target
    * @param {Object} options { properties: string[] }
    */
   observe(target, options = {}) {
@@ -27,27 +27,39 @@ export class StyleObserver {
     const mutationObs = new MutationObserver(() => this.#startPulse());
     mutationObs.observe(target, { attributes: true });
     mutationObs.observe(document.documentElement, { attributes: true });
-    
+
     const resizeObs = new ResizeObserver(() => this.#startPulse());
     resizeObs.observe(target);
 
     this.#observers.push(targetObs, rootObs, resizeObs);
 
     // 2. Interaction Events
-    const events = ['pointerenter', 'pointerleave', 'pointerdown', 'input', 'focusin', 'focusout', 'keydown'];
-    events.forEach(type => {
-      target.addEventListener(type, () => this.#startPulse(), { passive: true });
+    const events = [
+      'pointerenter',
+      'pointerleave',
+      'pointerdown',
+      'input',
+      'focusin',
+      'focusout',
+      'keydown',
+    ];
+    events.forEach((type) => {
+      target.addEventListener(type, () => this.#startPulse(), {
+        passive: true,
+      });
     });
-    window.addEventListener('pointerup', () => this.#startPulse(), { passive: true });
+    window.addEventListener('pointerup', () => this.#startPulse(), {
+      passive: true,
+    });
 
     // 3. Media Queries (Environment)
     const queries = [
       '(prefers-color-scheme: dark)',
       '(prefers-reduced-motion: reduce)',
       '(prefers-contrast: more)',
-      '(orientation: portrait)'
+      '(orientation: portrait)',
     ];
-    queries.forEach(q => {
+    queries.forEach((q) => {
       window.matchMedia(q).addEventListener('change', () => this.#startPulse());
     });
 
@@ -83,7 +95,7 @@ export class StyleObserver {
           target: this.#target,
           propertyName: prop,
           newValue: currentVal,
-          oldValue: this.#lastValues.get(prop)
+          oldValue: this.#lastValues.get(prop),
         });
         this.#lastValues.set(prop, currentVal);
       }
@@ -96,7 +108,7 @@ export class StyleObserver {
   }
 
   disconnect() {
-    this.#observers.forEach(obs => obs.disconnect());
+    this.#observers.forEach((obs) => obs.disconnect());
     this.#observers = [];
     cancelAnimationFrame(this.#rafId);
     this.#isPolling = false;
